@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MukiCloud — Todo habla con todo</title>
+<meta name="description" content="MukiCloud: gestión operacional minera en tiempo real. Dashboard, logística, recursos humanos, operaciones, mantenimiento y finanzas en una sola malla, con asistente de IA.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/site.js" defer></script>
+<style>
+:root{
+  --bg:#FFFFFF; --paper:#E9ECEF; --fg:#0A0A0A; --mute:#5B6570; --azul:#00AEEF; --dorado:#D4AF37; --blue:#00AEEF;
+  --line:#D5DADE; --line2:#C9CED3;
+  --amber:#D4AF37;
+  --pad:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--fg);font-family:'Manrope',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.section-copy,.section-nav{font-family:'Manrope',sans-serif}
+.section-title,h1,h2,h3{font-family:'Manrope',sans-serif;color:var(--fg)}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+.muki :focus-visible,.final :focus-visible{outline-color:#fff}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.in{max-width:1280px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--mute);display:flex;align-items:center;gap:12px;margin-bottom:24px;text-transform:uppercase}
+.eyebrow::before{content:"";width:8px;height:8px;background:var(--dorado)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ── Barra superior ── */
+.top{position:fixed;inset:0 0 auto 0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .in{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 var(--pad)}
+.brand{font-family:'Manrope',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.01em}
+.brand{font-weight:800;letter-spacing:.01em;line-height:1}
+.brand::after{content:"";display:block;height:3px;margin-top:4px;background:linear-gradient(90deg,var(--dorado) 0 30%,var(--azul) 30% 100%)}
+.skip{z-index:100}
+.integ-in>*,.mod .in>*,.meth .in>*,.final .in>*{min-width:0}
+html,body{max-width:100%;overflow-x:clip}
+.actions{display:flex;align-items:center;gap:8px}
+.burger{display:none;width:46px;height:46px;position:relative;border:1px solid var(--line2)}
+.burger i{position:absolute;left:12px;right:12px;height:2px;background:var(--fg);transition:transform .25s,opacity .25s}
+.burger i:nth-child(1){top:15px}.burger i:nth-child(2){top:22px}.burger i:nth-child(3){top:29px}
+.burger[aria-expanded=true] i:nth-child(1){top:22px;transform:rotate(45deg)}
+.burger[aria-expanded=true] i:nth-child(2){opacity:0}
+.burger[aria-expanded=true] i:nth-child(3){top:22px;transform:rotate(-45deg)}
+.mnav{position:fixed;top:60px;left:0;right:0;z-index:29;background:#fff;border-bottom:1px solid var(--line2);padding:6px var(--pad) 18px;max-height:calc(100vh - 60px);overflow:auto;box-shadow:0 20px 40px rgba(10,10,10,.12)}
+.mnav[hidden]{display:none}
+.mnav a{display:block;padding:15px 0;border-bottom:1px solid var(--line);font-size:17px;font-weight:600}
+@media (max-width:1100px){.burger{display:block}}
+@media (min-width:1101px){.mnav{display:none}}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:600px){
+  .top .in{height:60px}
+  .top .btn{padding:8px 12px;font-size:12.5px;min-height:44px}
+  .brand{font-size:18px}
+  .hero{padding-top:104px}
+  .hero h1{font-size:clamp(38px,11.5vw,56px)}
+  .facts b{font-size:32px}
+  .cta .btn{width:100%}
+  .section-title{font-size:clamp(40px,12vw,56px)}
+  .stage-wrap{max-width:100%}
+  .status{font-size:12px;gap:8px 14px}
+  .win-bar{font-size:10px;letter-spacing:.08em;gap:8px;flex-wrap:wrap}
+  .win-body{padding:12px}
+  .kpi b{font-size:20px}
+  .phone{max-width:240px;margin:0 auto}
+  .demo-head{padding:18px 18px 0}.demo-sub{padding:8px 18px 0}.demo form{padding:16px 18px 20px}
+  .demo-actions .btn{flex:1}
+  .biz{gap:18px}
+  .ver-foot .in>div:last-child{flex-direction:column}
+  .ck{left:8px;right:8px;bottom:8px;padding:16px;max-height:80vh;overflow:auto}
+  .ck-actions button{flex:1 1 auto}
+  .mod,.meth,.integ,.final{padding-top:56px;padding-bottom:56px}
+  .final h2{font-size:clamp(36px,11vw,52px)}
+  .contact a.l{font-size:18px;flex-wrap:wrap}
+  table{min-width:380px}
+}
+
+.top nav a,.top .btn{white-space:nowrap}
+@media (max-width:1100px){.top .in nav{display:none}}
+.final .btn{background:var(--azul);border-color:var(--azul);color:#0A0A0A}
+.final .btn:hover{background:#33C1F3;border-color:#33C1F3}
+
+/* Modal de demostración */
+dialog.demo{border:1px solid var(--fg);background:var(--paper);color:var(--fg);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.35);margin:auto}
+dialog.demo::backdrop{background:rgba(9,10,12,.55)}
+.demo-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:24px 26px 0}
+.demo-head h2{font-size:clamp(26px,4vw,34px);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+.demo-x{width:44px;height:44px;flex:none;border:1px solid var(--fg);display:grid;place-items:center;transition:background .2s}
+.demo-x:hover{background:var(--paper)}
+.demo-sub{padding:10px 26px 0;color:var(--mute);font-size:15px}
+.demo form{padding:20px 26px 26px;display:grid;gap:16px}
+.fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.fld label small{font-weight:400;color:var(--mute)}
+.fld input[type=text],.fld input[type=email]{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--fg);background:#fff;color:var(--fg);border-radius:0}
+.fld input:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.fld input[aria-invalid=true]{border-color:#B3261E;background:#FFF6F5}
+.err{color:#B3261E;font-size:13px;margin-top:5px;min-height:0}
+.chk{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:var(--mute);line-height:1.5}
+.chk input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--fg)}
+.chk a{color:var(--fg);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--fg);text-decoration-thickness:1px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.demo-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.demo-actions .btn[disabled]{opacity:.6;cursor:progress}
+.form-msg{font-size:14px;color:#B3261E}
+.demo-ok{padding:44px 26px 36px;text-align:center}
+.demo-ok[hidden]{display:none}
+.ok-art{width:132px;height:132px;margin:0 auto 30px;position:relative}
+.ok-art .ring{position:absolute;inset:0;border:2px solid var(--fg);opacity:0;transform:scale(.4)}
+.ok-art .sq{position:absolute;inset:22px;background:var(--azul);border:2px solid var(--fg);transform:scale(0) rotate(-45deg)}
+.ok-art svg{position:absolute;inset:0;width:100%;height:100%}
+.ok-art path{fill:none;stroke:var(--fg);stroke-width:7;stroke-linecap:square;stroke-dasharray:80;stroke-dashoffset:80}
+.demo-ok.go .ring{animation:ring 1.1s ease-out forwards}
+.demo-ok.go .ring:nth-child(2){animation-delay:.18s}
+.demo-ok.go .ring:nth-child(3){animation-delay:.36s}
+.demo-ok.go .sq{animation:sq .55s cubic-bezier(.2,1.3,.4,1) .05s forwards}
+.demo-ok.go path{animation:draw .5s ease-out .5s forwards}
+@keyframes ring{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes sq{to{transform:scale(1) rotate(0)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.demo-ok h3{font-size:26px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+.demo-ok p{color:var(--mute);max-width:40ch;margin:0 auto 22px}
+.ver-foot{border-top:1px solid var(--line);padding:30px var(--pad) 0}
+.biz{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:24px 40px;font-size:13.5px;color:var(--mute);padding-bottom:22px}
+.biz b{display:block;color:var(--fg);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.biz a{text-decoration:underline;text-underline-offset:3px;color:var(--fg)}
+.biz button{font:inherit;color:var(--fg);text-decoration:underline;text-underline-offset:3px;padding:0}
+@media (max-width:760px){.biz{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.demo-ok .ring{display:none}.demo-ok .sq{transform:none}.demo-ok path{stroke-dashoffset:0}}
+.top nav{display:flex;gap:26px;font-size:13px;font-weight:500}
+.top nav a{color:var(--mute);transition:color .2s}
+.top nav a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--azul);color:#0A0A0A;font-weight:700;font-size:14px;padding:13px 22px;min-height:46px;transition:background .2s,color .2s;border:1px solid var(--azul)}
+.btn:hover{background:#33C1F3;border-color:#33C1F3}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--fg)}
+.btn.ghost:hover{background:var(--fg);color:#fff;border-color:var(--fg)}
+.top .btn{padding:9px 16px;font-size:13px}
+
+/* ── Hero ── */
+.hero{padding:clamp(120px,14vw,190px) var(--pad) clamp(56px,7vw,96px)}
+.hero h1{font-weight:600;font-size:clamp(46px,8.4vw,128px);line-height:.94;letter-spacing:-.03em;max-width:13ch;margin-bottom:30px}
+.hero h1 mark{background:none;color:inherit;text-decoration:underline;text-decoration-color:var(--dorado);text-decoration-thickness:.05em;text-underline-offset:.12em}
+.hero .lead{max-width:56ch;font-size:clamp(17px,1.6vw,20px);color:var(--mute);margin-bottom:34px}
+.hero .lead b{color:var(--fg);font-weight:600}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--fg);margin-top:clamp(48px,7vw,88px)}
+.facts div{padding:18px 18px 0 0}
+.facts b{font-family:'Manrope',sans-serif;font-weight:600;font-size:clamp(34px,4.4vw,60px);line-height:1;display:block;letter-spacing:-.02em}
+.facts span{font-size:13px;color:var(--mute)}
+
+/* ── Sección integraciones (red) ── */
+.integ{padding:clamp(72px,10vw,140px) var(--pad);background:var(--paper);border-block:1px solid var(--line)}
+.integ-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(32px,6vw,96px);align-items:center}
+.section-title{font-weight:600;font-size:clamp(44px,6.4vw,92px);line-height:.96;letter-spacing:-.025em;margin-bottom:22px;max-width:9ch}
+.lede{color:var(--mute);font-size:16px;max-width:40ch;margin-bottom:40px}
+.nav-head{display:none}
+.list{list-style:none;border-top:1px solid var(--line2)}
+.list li{border-bottom:1px solid var(--line)}
+.item{width:100%;display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;text-align:left;padding:16px 8px;color:var(--mute);transition:background .25s,padding .25s}
+.item .n{font-size:12px;font-weight:500;letter-spacing:.1em}
+.item .t{font-size:18px;font-weight:500;color:var(--fg)}
+.item .d{font-size:13px;text-align:right}
+.item[aria-current=true],.item:hover,.item:focus-visible{padding-left:16px}
+.item[aria-current=true]{background:var(--paper);color:var(--fg);box-shadow:inset 3px 0 0 var(--dorado)}
+.item[aria-current=true] .d{color:var(--fg)}
+.stage-wrap{width:100%;max-width:640px;justify-self:end}
+.stage{position:relative;width:100%;aspect-ratio:1/1;border-radius:50%;border:1px solid var(--line2);background:radial-gradient(circle at 50% 50%,rgba(0,174,239,.08),transparent 60%)}
+.stage::before,.stage::after{content:"";position:absolute;border-radius:50%;border:1px dashed rgba(10,10,10,.14);pointer-events:none}
+.stage::before{inset:14%}.stage::after{inset:30%}
+.stage canvas,.stage svg.fb{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage svg.fb{transition:opacity .4s}
+.stage.live svg.fb{opacity:0;pointer-events:none}
+.stage canvas{opacity:0;transition:opacity .4s}
+.stage.live canvas{opacity:1}
+.status{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--line2);font-size:12.5px;color:var(--mute)}
+.status b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
+.status .ok::before{content:"";display:inline-block;width:7px;height:7px;background:var(--dorado);margin-right:8px;vertical-align:1px}
+
+/* ── Módulos ── */
+.mod{padding:clamp(72px,9vw,128px) var(--pad);border-bottom:1px solid var(--line)}
+.mod.alt{background:var(--paper)}
+.mod .in{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,88px);align-items:center}
+.mod.rev .in{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.mod.rev .copy{order:2}
+.mod h2{font-weight:600;font-size:clamp(34px,4.6vw,64px);line-height:1;letter-spacing:-.02em;margin-bottom:18px;}
+.mod p.d{color:var(--mute);font-size:16.5px;margin-bottom:24px;max-width:46ch}
+.ticks{list-style:none}
+.ticks li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:15px}
+.ticks li::before{content:"";flex:none;width:9px;height:9px;margin-top:8px;background:var(--dorado)}
+.ticks li:last-child{border-bottom:1px solid var(--line)}
+
+/* Ventana de app (maqueta clara) */
+.win{background:#fff;border:1px solid var(--line2);box-shadow:0 12px 40px rgba(10,10,10,.1)}
+.win-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;background:var(--fg);color:#fff}
+.win-bar .live::before{content:"";display:inline-block;width:7px;height:7px;background:var(--azul);margin-right:6px}
+.win-body{padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.kpis.k4{grid-template-columns:repeat(4,1fr)}
+.kpi{border:1px solid var(--line2);padding:12px}
+.kpi small{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.kpi b{font-family:'Manrope',sans-serif;font-weight:600;font-size:clamp(18px,2.1vw,27px);line-height:1.1;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;color:var(--mute)}
+.kpi.hi{border-top:3px solid var(--dorado)}
+.sub{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:16px 0 8px;display:flex;justify-content:space-between}
+.bar-row{display:grid;grid-template-columns:104px 1fr 62px;gap:10px;align-items:center;font-size:12.5px;padding:5px 0}
+.bar-row .bar{height:10px;background:rgba(9,10,12,.07);position:relative}
+.bar-row .bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--fg);transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.bar-row .bar i.b{background:var(--blue)}
+.bar-row b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.pl-row{display:grid;grid-template-columns:104px 1fr 62px;gap:10px;align-items:center;font-size:12.5px;padding:5px 0}
+.pl-row .ax{height:10px;position:relative;background:linear-gradient(var(--line2),var(--line2)) center/1px 100% no-repeat}
+.pl-row .ax i{position:absolute;top:0;bottom:0;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.pl-row .ax i.p{left:50%;background:var(--blue)}
+.pl-row .ax i.n{right:50%;background:var(--amber)}
+.pl-row b{text-align:right;font-weight:600}
+.pl-row b.neg{color:var(--fg)}
+
+/* Tabla */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:left;font-weight:600;padding:6px 6px 8px;border-bottom:1px solid var(--fg)}
+td{padding:9px 6px;border-bottom:1px solid var(--line)}
+th:last-child,td:last-child{text-align:right}
+td:last-child{font-weight:600;font-variant-numeric:tabular-nums}
+tfoot td{border-bottom:0;border-top:1px solid var(--fg);font-weight:600;background:var(--paper)}
+
+/* Teléfono */
+.phone-wrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:22px;align-items:end;min-width:0}.phone-wrap .win{min-width:0}.phone-wrap .kpi b{font-size:clamp(16px,1.7vw,22px)}.phone-wrap .kpis{grid-template-columns:1fr 1fr}.phone-wrap .kpi.hi{grid-column:1/-1}
+.phone{border:1px solid var(--fg);border-radius:30px;padding:10px;background:var(--fg);box-shadow:0 12px 40px rgba(10,10,10,.18)}
+.phone-in{background:#fff;border-radius:22px;padding:14px 12px 16px;min-height:340px}
+.phone-in .st{display:flex;justify-content:space-between;font-size:10px;font-weight:600;margin-bottom:10px;color:var(--mute)}
+.phone-in h4{font-family:'Manrope',sans-serif;font-size:14px;margin-bottom:8px}
+.phone-in .mini{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.phone-in .mini div{border:1px solid var(--line2);padding:7px;font-size:10px;color:var(--mute)}
+.phone-in .mini b{display:block;font-size:14px;color:var(--fg);font-family:'Manrope',sans-serif}
+.phone-in .al{font-size:10.5px;padding:7px 8px;margin-top:6px;border-left:3px solid var(--amber);background:rgba(212,175,55,.14)}
+.phone-in .al.ok{border-color:var(--azul);background:rgba(0,174,239,.1)}
+.stock-item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.stock-item b{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Frentes (operaciones) */
+.fronts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.front{border:1px solid var(--line2);padding:12px}
+.front h4{font-family:'Manrope',sans-serif;font-size:15px;display:flex;justify-content:space-between;margin-bottom:8px}
+.front .pg{height:8px;background:rgba(9,10,12,.07);margin-bottom:8px}
+.front .pg i{display:block;height:100%;width:0;background:var(--fg);transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.front.ok .pg i{background:var(--blue)}
+.front.low .pg i{background:var(--amber)}
+.front p{font-size:11.5px;color:var(--mute);line-height:1.5}
+
+/* Mantenimiento */
+.kit{border:1px solid var(--line2);padding:12px 14px;margin-bottom:8px}
+.kit .h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:4px}
+.kit h4{font-family:'Manrope',sans-serif;font-size:15px}
+.chip{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;background:#E6F7FE;border:1px solid var(--azul);white-space:nowrap}
+.chip.p{background:transparent}
+.kit p{font-size:12px;color:var(--mute)}
+
+/* MUKI (bloque de contraste dentro del modo claro) */
+.muki{background:#0A0A0A;color:#fff;border-bottom:0}
+.muki h2{color:#fff}
+.muki .eyebrow{color:#C9CED3}
+.muki p.d{color:#C9CED3}
+.muki .ticks li{border-color:rgba(255,255,255,.18)}
+.chat{background:#fff;color:var(--fg);border:1px solid rgba(255,255,255,.25)}
+.chat .win-bar{background:#1a1a1a}
+.msgs{padding:16px;min-height:230px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:10px 13px;font-size:13.5px;line-height:1.5;animation:in .4s ease both}
+.msg.bot{background:#fff;border:1px solid var(--line2)}
+.msg.me{align-self:flex-end;background:var(--azul);color:#0A0A0A}
+.msg b{font-weight:600}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.qs{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 16px}
+.qs button{border:1px solid var(--fg);padding:7px 12px;font-size:12.5px;font-weight:500;transition:background .2s}
+.qs button:hover{background:var(--paper)}
+.alerts{border-top:1px solid var(--fg);padding:14px 16px;display:grid;gap:8px}
+.alert{display:grid;grid-template-columns:10px 1fr;gap:10px;font-size:12.5px;line-height:1.5}
+.alert i{width:10px;height:10px;margin-top:5px;background:var(--amber)}
+.alert.ok i{background:var(--azul)}
+.alert b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.note{font-size:11px;color:var(--mute);margin-top:12px}
+.muki .note{color:#C9CED3}
+
+/* Metodología */
+.meth{padding:clamp(72px,9vw,128px) var(--pad);border-bottom:1px solid var(--line)}
+.meth .in{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,88px)}
+.meth h2{font-weight:600;font-size:clamp(34px,4.6vw,64px);line-height:1;letter-spacing:-.02em;}
+.meth p{color:var(--mute);font-size:17px;max-width:56ch;margin-bottom:22px}
+.meth p b{color:var(--fg);font-weight:700}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--fg)}
+.trio div{padding:16px 16px 0 0}
+.trio b{font-family:'Manrope',sans-serif;font-size:22px;font-weight:600;display:block}
+.trio span{font-size:13.5px;color:var(--mute)}
+
+/* CTA */
+.final{padding:clamp(72px,10vw,150px) var(--pad);background:#0A0A0A;color:#fff}
+.final h2,.final p,.final .eyebrow{color:#fff}
+.final p{color:#D5DADE}
+.final .in{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(24px,5vw,72px);align-items:end}
+.final h2{font-weight:600;font-size:clamp(44px,7vw,104px);line-height:.94;letter-spacing:-.03em;margin-bottom:20px}
+.final p{font-size:17px;max-width:46ch}
+.contact a.l{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Manrope',sans-serif;font-weight:600;font-size:clamp(19px,2.2vw,26px);transition:padding .25s}
+.contact a.l:first-child{border-top:1px solid rgba(255,255,255,.3)}
+.contact a.l:hover{padding-left:12px}
+.contact a.l span{font-family:'Manrope',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+footer{padding:22px var(--pad);font-size:13px;color:var(--mute)}
+footer .in{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.on{opacity:1;transform:none}
+
+/* ── Responsive ── */
+@media (max-width:960px){
+  .mod .in,.mod.rev .in,.meth .in,.final .in,.integ-in{grid-template-columns:1fr}
+  .mod.rev .copy{order:0}
+  .facts{grid-template-columns:1fr 1fr}
+  .top nav{display:none}
+  .phone-wrap{grid-template-columns:1fr}
+  .phone{max-width:260px}
+}
+@media (max-width:860px){
+  .stage-wrap{justify-self:center;max-width:min(100%,520px)}
+  .nav-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px;letter-spacing:.14em;color:var(--mute)}
+  .arrows{display:flex;gap:8px}
+  .arrows button{width:44px;height:44px;border:1px solid var(--fg);display:grid;place-items:center;transition:background .2s}
+  .arrows button:hover{background:var(--paper)}
+  .arrows button:disabled{opacity:.35;cursor:default;background:none}
+  .list{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;border:0;padding:2px var(--pad) 6px;margin:0 calc(-1 * var(--pad));scroll-padding-inline:var(--pad);scrollbar-width:none}
+  .list::-webkit-scrollbar{display:none}
+  .list li{flex:0 0 auto;scroll-snap-align:start;border:1px solid var(--line2)}
+  .item{grid-template-columns:auto auto;gap:10px;padding:12px 16px;min-height:48px;width:auto}
+  .item .d{display:none}
+  .item[aria-current=true],.item:hover,.item:focus-visible{padding-left:16px}
+}
+@media (max-width:560px){
+  .kpis,.kpis.k4{grid-template-columns:1fr 1fr}
+  .fronts{grid-template-columns:1fr}
+  .trio{grid-template-columns:1fr}
+  .bar-row,.pl-row{grid-template-columns:84px 1fr 56px}
+  .win-body{padding:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;animation:none!important}
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none}
+}
+
+/* ═════ Animaciones ═════ */
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
+.progress i{display:block;height:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--dorado) 0 30%,var(--azul) 30% 100%)}
+.hero h1 mark{background:linear-gradient(var(--dorado),var(--dorado)) 0 100%/0% .055em no-repeat;text-decoration:none;padding-bottom:.05em;transition:background-size 1s cubic-bezier(.2,.7,.2,1) .55s}
+.hero h1.on mark{background-size:100% .055em}
+
+/* Entrada escalonada de los elementos internos al hacer scroll */
+.st{opacity:0;translate:0 16px;transition:opacity .6s ease var(--d,0s),translate .6s cubic-bezier(.2,.7,.2,1) var(--d,0s),transform .3s ease,border-color .3s,box-shadow .3s,background-color .3s}
+.on .st,.st.on{opacity:1;translate:0 0}
+.win.rv{transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.ticks li::before{transition:transform .3s}
+.top nav a{position:relative}
+.top nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--dorado);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.top nav a.on::after{transform:scaleX(1)}
+.top nav a.on{color:var(--fg)}
+.btn{position:relative;overflow:hidden;isolation:isolate}
+.btn::before{content:"";position:absolute;inset:0;background:#0A0A0A;transform:translateX(-101%);transition:transform .38s cubic-bezier(.2,.7,.2,1);z-index:-1}
+.final .btn::before{background:#fff}
+.phone{transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.demo-x svg{transition:transform .3s}
+.item .t{transition:transform .25s}
+tbody tr{transition:background-color .2s}
+.stock-item{transition:padding .25s,background-color .2s}
+canvas#cv.pt{cursor:pointer}
+
+@media (hover:hover) and (pointer:fine){
+  .btn:hover::before{transform:translateX(0)}
+  .btn:hover{background:var(--azul);border-color:#0A0A0A;color:#fff}
+  .btn.ghost:hover{background:transparent;border-color:#0A0A0A;color:#fff}
+  .final .btn:hover{background:var(--azul);border-color:#fff;color:#0A0A0A}
+  .top nav a:hover::after{transform:scaleX(1)}
+  .brand:hover::after{transform:scaleY(1.7);transform-origin:50% 0}
+  .kpi:hover,.front:hover,.kit:hover{transform:translateY(-3px);border-color:var(--azul);box-shadow:0 10px 24px rgba(10,10,10,.1)}
+  .win:hover{box-shadow:0 20px 56px rgba(10,10,10,.18)}
+  .phone:hover{transform:translateY(-6px) rotate(-1.5deg)}
+  .bar-row:hover,.pl-row:hover{background:var(--paper)}
+  .bar-row:hover .bar i.b,.front:hover .pg i{background:var(--dorado)}
+  tbody tr:hover{background:var(--paper)}
+  .stock-item:hover{padding-left:8px;background:var(--paper)}
+  .ticks li:hover{transform:translateX(5px)}
+  .ticks li:hover::before{transform:rotate(45deg) scale(1.3)}
+  .facts>div:hover b,.trio>div:hover b{color:var(--azul)}
+  .item:hover .t{transform:translateX(4px)}
+  .qs button:hover{transform:translateY(-2px)}
+  .demo-x:hover svg{transform:rotate(90deg)}
+  .alert:hover{transform:translateX(4px)}
+  .biz a:hover,.legal a:hover{text-decoration-thickness:2px}
+  .chip{transition:transform .2s}.kit:hover .chip{transform:scale(1.06)}
+}
+@media (prefers-reduced-motion:reduce){
+  .st{opacity:1;translate:none}
+  .hero h1 mark{background-size:100% .055em}
+  .progress{display:none}
+}
+</style>
+<noscript><style>.rv,.st{opacity:1!important;translate:none!important;transform:none!important}.hero h1 mark{background-size:100% .055em}</style></noscript>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
+<header class="top">
+  <div class="in">
+    <a href="#inicio" class="brand" aria-label="MukiCloud, inicio">MukiCloud</a>
+    <nav aria-label="Principal">
+      <a href="#red">Integraciones</a><a href="#dashboard">Dashboard</a><a href="#logistica">Logística</a>
+      <a href="#rrhh">RR. HH.</a><a href="#operaciones">Operaciones</a><a href="#mantenimiento">Mantenimiento</a><a href="#muki">MUKI</a>
+    </nav>
+    <div class="actions"><button type="button" class="btn" data-demo="barra">Agendar demostración</button><button type="button" class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mnav"><i></i><i></i><i></i></button></div>
+  </div>
+<nav class="mnav" id="mnav" aria-label="Menú móvil" hidden>
+  <a href="#red">Integraciones</a><a href="#dashboard">Dashboard</a><a href="#logistica">Logística</a><a href="#rrhh">RR. HH.</a><a href="#operaciones">Operaciones</a><a href="#mantenimiento">Mantenimiento</a><a href="#muki">MUKI</a><a href="#contacto">Contacto</a>
+</nav>
+<div class="progress" aria-hidden="true"><i id="prog"></i></div>
+</header>
+
+<main id="contenido">
+
+<!-- ═════ HERO ═════ -->
+<section class="hero" id="inicio">
+  <div class="in">
+    <p class="eyebrow rv">Gestión operacional minera</p>
+    <h1 class="rv">La inteligencia que <mark>tu mina</mark> necesita.</h1>
+    <p class="lead rv">Si no puedes medirlo, no puedes controlarlo. Si no puedes controlarlo, estás perdiendo dinero. <b>MukiCloud mide cada metro, cada sol y cada hora</b> de tu operación en tiempo real, desde tu celular o donde estés.</p>
+    <div class="cta rv">
+      <button type="button" class="btn" data-demo="portada">Agendar una demostración →</button>
+      <a class="btn ghost" href="#red">Ver cómo se conecta</a>
+    </div>
+    <div class="facts rv">
+      <div><b data-count="6">0</b><span>módulos integrados</span></div>
+      <div><b>1</b><span>tablero para toda la operación</span></div>
+      <div><b>IA</b><span>asistente conversacional</span></div>
+      <div><b>Móvil</b><span>y escritorio, sincronizados</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ RED DE INTEGRACIONES ═════ -->
+<section class="integ" id="red" aria-labelledby="integ-title">
+  <div class="integ-in">
+    <div class="section-copy">
+      <p class="eyebrow">SYSTEM / 88</p>
+      <h2 class="section-title" id="integ-title">Todo habla con todo.</h2>
+      <p class="lede">Seis módulos, una sola malla. Cada metro avanzado, cada ingreso de almacén y cada jornal viajan por su ruta hasta el tablero donde se decide.</p>
+
+      <nav class="section-nav" aria-label="Módulos">
+        <div class="nav-head">
+          <span>MÓDULOS · 06</span>
+          <div class="arrows">
+            <button type="button" id="prev" aria-label="Módulo anterior" aria-controls="ilist"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3L5 8l5 5"/></svg></button>
+            <button type="button" id="next" aria-label="Módulo siguiente" aria-controls="ilist"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3l5 5-5 5"/></svg></button>
+          </div>
+        </div>
+        <ul class="list" id="ilist">
+          <li><button type="button" class="item" data-i="0"><span class="n">01</span><span class="t">Dashboard KPI</span><span class="d">Ganado, gasto y resultado</span></button></li>
+          <li><button type="button" class="item" data-i="1"><span class="n">02</span><span class="t">Logística</span><span class="d">Ingresos, salidas y stock</span></button></li>
+          <li><button type="button" class="item" data-i="2"><span class="n">03</span><span class="t">Recursos Humanos</span><span class="d">Tareos y planilla</span></button></li>
+          <li><button type="button" class="item" data-i="3"><span class="n">04</span><span class="t">Operaciones</span><span class="d">Avance por frente</span></button></li>
+          <li><button type="button" class="item" data-i="4"><span class="n">05</span><span class="t">Mantenimiento</span><span class="d">Kits y preventivos</span></button></li>
+          <li><button type="button" class="item" data-i="5"><span class="n">06</span><span class="t">Finanzas</span><span class="d">Costo por metro</span></button></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+        <svg class="fb" viewBox="0 0 400 400" aria-hidden="true">
+          <g stroke="#0A0A0A" stroke-opacity=".22" stroke-width=".8" fill="none">
+            <circle cx="200" cy="200" r="78"/><circle cx="200" cy="200" r="148"/>
+            <path d="M200 200L200 122M200 200L267.5 161M200 200L267.5 239M200 200L200 278M200 200L132.5 239M200 200L132.5 161"/>
+            <path d="M200 122L200 52M267.5 161L328 126M267.5 239L328 274M200 278L200 348M132.5 239L72 274M132.5 161L72 126"/>
+          </g>
+          <g fill="#FFFFFF" stroke="#00AEEF" stroke-width="1.4">
+            <circle cx="200" cy="122" r="5"/><circle cx="267.5" cy="161" r="5"/><circle cx="267.5" cy="239" r="5"/>
+            <circle cx="200" cy="278" r="5"/><circle cx="132.5" cy="239" r="5"/><circle cx="132.5" cy="161" r="5"/>
+            <circle cx="200" cy="52" r="4"/><circle cx="328" cy="126" r="4"/><circle cx="328" cy="274" r="4"/>
+            <circle cx="200" cy="348" r="4"/><circle cx="72" cy="274" r="4"/><circle cx="72" cy="126" r="4"/>
+          </g>
+          <rect x="176" y="176" width="48" height="48" fill="#0A0A0A"/>
+          <text x="200" y="204" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="600" letter-spacing="2" fill="#FFFFFF">MESH</text>
+        </svg>
+        <canvas id="cv" role="img" aria-label="Red de módulos: doce nodos en dos órbitas conectados a un núcleo MESH">Red de seis módulos conectados a un núcleo MESH.</canvas>
+      </div>
+      <div class="status" role="status" aria-live="off">
+        <span class="ok">Estado <b>Operativo</b></span>
+        <span>Latencia <b id="lat">14</b> ms</span>
+        <span>Eventos <b id="ev">0</b></span>
+      </div>
+      <p id="live" style="position:absolute;left:-9999px" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ DASHBOARD ═════ -->
+<section class="mod" id="dashboard">
+  <div class="in">
+    <div class="copy rv">
+      <p class="eyebrow">Dashboard principal</p>
+      <h2>Finanzas y operaciones conectadas.</h2>
+      <p class="d">Cada metro avanzado, cada equipo y cada sol gastado convergen en un solo tablero vivo.</p>
+      <ul class="ticks">
+        <li>Ganado, gasto total y resultado del período en vivo</li>
+        <li>Metros por frente con pronóstico de cierre de mes</li>
+        <li>Costo por metro y rendimiento promedio diario</li>
+        <li>Ganancia o pérdida por equipo, minuto a minuto</li>
+      </ul>
+    </div>
+    <div class="win rv" aria-label="Maqueta del Dashboard KPI">
+      <div class="win-bar"><span>Dashboard KPI · Julio 2026</span><span class="live">En vivo</span></div>
+      <div class="win-body">
+        <div class="kpis">
+          <div class="kpi"><small>Ganado</small><b>S/ 412,900</b><span>Valorización neta del mes</span></div>
+          <div class="kpi"><small>Gasto total</small><b>S/ 324,864</b><span>Explosivos aparte: S/ 55,019</span></div>
+          <div class="kpi hi"><small>Resultado</small><b>S/ +88,036</b><span>Rentabilidad del período</span></div>
+        </div>
+        <div class="sub"><span>Metros por frente</span><span>122.5 m en el mes</span></div>
+        <div class="bar-row"><span>CRNE</span><div class="bar"><i class="b" data-w="100"></i></div><b>51.7 m</b></div>
+        <div class="bar-row"><span>RA Brenda</span><div class="bar"><i class="b" data-w="94"></i></div><b>48.8 m</b></div>
+        <div class="bar-row"><span>GLSE-2</span><div class="bar"><i class="b" data-w="29"></i></div><b>14.9 m</b></div>
+        <div class="bar-row"><span>ESCM 4430</span><div class="bar"><i class="b" data-w="5"></i></div><b>2.7 m</b></div>
+        <div class="sub"><span>Ganancia / pérdida por equipo</span></div>
+        <div class="pl-row"><span>Scoop Epiroc</span><div class="ax"><i class="p" data-w="50"></i></div><b>+S/ 24k</b></div>
+        <div class="pl-row"><span>Dumper</span><div class="ax"><i class="p" data-w="10"></i></div><b>+S/ 5k</b></div>
+        <div class="pl-row"><span>Compresora M122</span><div class="ax"><i class="p" data-w="8"></i></div><b>+S/ 4k</b></div>
+        <div class="pl-row"><span>Excavadora</span><div class="ax"><i class="n" data-w="6"></i></div><b class="neg">−S/ 3k</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ LOGÍSTICA ═════ -->
+<section class="mod alt rev" id="logistica">
+  <div class="in">
+    <div class="rv">
+      <div class="phone-wrap">
+        <div class="win" aria-label="Maqueta del módulo Logística">
+          <div class="win-bar"><span>Logística · Stock vigente</span><span class="live">En vivo</span></div>
+          <div class="win-body">
+            <div class="kpis">
+              <div class="kpi"><small>Con stock</small><b data-count="185">0</b><span>productos</span></div>
+              <div class="kpi"><small>Agotados</small><b data-count="66">0</b><span>sin movimiento</span></div>
+              <div class="kpi hi"><small>Valor en stock</small><b>S/ 185,033</b><span>18,033 ítems</span></div>
+            </div>
+            <div class="stock-item"><span>Saco metalero polipropileno 20" × 30"</span><b>8,500 PZA</b></div>
+            <div class="stock-item"><span>Cartucho de cemento 30 mm × 305 mm</span><b>1,400 PZA</b></div>
+            <div class="stock-item"><span>Resina 28 mm × 305 mm</span><b>1,250 PZA</b></div>
+            <div class="stock-item"><span>Tubo polietileno verde 2" PE 80</span><b>700 M</b></div>
+            <div class="stock-item"><span>Cable de acero galvanizado 5/32"</span><b>600 M</b></div>
+          </div>
+        </div>
+        <div class="phone" aria-label="Maqueta de la app en el celular">
+          <div class="phone-in">
+            <div class="st"><span>MUKICLOUD</span><span>En vivo</span></div>
+            <h4>Resumen</h4>
+            <div class="mini"><div>Ganado<b>S/ 412.9k</b></div><div>Gasto<b>S/ 292.2k</b></div><div>Stock ítems<b>18,033</b></div><div>Personal<b>52</b></div></div>
+            <div class="al">Costo por metro elevado: S/ 2,652/m</div>
+            <div class="al ok">Cero incidentes de seguridad: 19 días</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="copy rv">
+      <p class="eyebrow">Módulo Logística</p>
+      <h2>Toda tu logística en tu bolsillo.</h2>
+      <p class="d">Ingresos, salidas y stock en vivo desde donde quieras: la oficina, la mina o tu celular. Cada movimiento queda trazado y sincronizado en todos los dispositivos al instante.</p>
+      <ul class="ticks">
+        <li>Stock vigente valorizado, ítem por ítem</li>
+        <li>Registrar ingresos y salidas en segundos</li>
+        <li>Alertas de productos agotados o sin movimiento</li>
+        <li>Exportación a Excel con un clic</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ RR. HH. ═════ -->
+<section class="mod" id="rrhh">
+  <div class="in">
+    <div class="copy rv">
+      <p class="eyebrow">Recursos Humanos</p>
+      <h2>Tu gasto de personal, minuto a minuto.</h2>
+      <p class="d">Tareos, jornales y planilla en tiempo real. MukiCloud pone números a lo que hoy nadie está midiendo: cuánto te cuesta realmente cada guardia.</p>
+      <ul class="ticks">
+        <li>Tareo diario y mensual por trabajador, con jornal y pago calculado solo</li>
+        <li>Planilla de operarios integrada a las operaciones</li>
+        <li>Costo de cada guardia visible durante el mes</li>
+      </ul>
+    </div>
+    <div class="win rv" aria-label="Maqueta del módulo Recursos Humanos">
+      <div class="win-bar"><span>Recursos Humanos · Planilla operarios</span><span class="live">En vivo</span></div>
+      <div class="win-body">
+        <div class="kpis">
+          <div class="kpi hi"><small>Acumulado mes</small><b>S/ 84,120</b><span>gasto de personal</span></div>
+          <div class="kpi"><small>Personal activo</small><b data-count="46">0</b><span>trabajadores</span></div>
+          <div class="kpi"><small>Tareas hoy</small><b data-count="38">0</b><span>registradas</span></div>
+        </div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cargo</th><th>Tareas</th><th>Jornal</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>Maestro perforista 1</td><td>1</td><td>S/ 130</td><td>S/ 195</td></tr>
+            <tr><td>Maestro perforista 1</td><td>1</td><td>S/ 130</td><td>S/ 195</td></tr>
+            <tr><td>Operador de dumper</td><td>1</td><td>S/ 120</td><td>S/ 180</td></tr>
+            <tr><td>Maestro perforista 2</td><td>1</td><td>S/ 115</td><td>S/ 173</td></tr>
+            <tr><td>Conductor</td><td>1</td><td>S/ 100</td><td>S/ 150</td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="3">Gasto de personal del mes · 46 trabajadores</td><td>S/ 84,120</td></tr></tfoot>
+        </table></div>
+        <p class="note">Maqueta con cargos y jornales de ejemplo; los nombres de los trabajadores no se muestran.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ OPERACIONES ═════ -->
+<section class="mod alt rev" id="operaciones">
+  <div class="in">
+    <div class="win rv" aria-label="Maqueta del Tablero de Operaciones">
+      <div class="win-bar"><span>Tablero de Operaciones · Día 24 de 30</span><span class="live">En vivo</span></div>
+      <div class="win-body">
+        <div class="kpis k4">
+          <div class="kpi"><small>Avance</small><b>122.5 m</b><span>meta 158 m</span></div>
+          <div class="kpi"><small>Cumplim.</small><b>78%</b><span>del programa</span></div>
+          <div class="kpi"><small>En frentes</small><b>21</b><span>Brenda 12 · CRNE 9</span></div>
+          <div class="kpi hi"><small>Cierre</small><b>153.1 m</b><span>97% de meta</span></div>
+        </div>
+        <div class="fronts">
+          <div class="front ok"><h4>RA Brenda <span class="num">98%</span></h4><div class="pg"><i data-w="98"></i></div><p>48.8 / 50 m · Personal 12<br>Cimbras 38 · Explosivo S/ 16,672<br>Cierre proyectado 61.0 m</p></div>
+          <div class="front ok"><h4>CRNE <span class="num">86%</span></h4><div class="pg"><i data-w="86"></i></div><p>51.7 / 60 m · Personal 9<br>Cimbras 3 · Explosivo S/ 17,736<br>Cierre proyectado 64.6 m</p></div>
+          <div class="front ok"><h4>GLSE-2 <span class="num">99%</span></h4><div class="pg"><i data-w="99"></i></div><p>14.9 / 15 m<br>Cierre 18.6 m</p></div>
+          <div class="front low"><h4>ESCM 4430 <span class="num">15%</span></h4><div class="pg"><i data-w="15"></i></div><p>2.7 / 18 m<br>Explosivo S/ 336</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy rv">
+      <p class="eyebrow">Módulo Operaciones</p>
+      <h2>Sigue tu operación desde tu casa.</h2>
+      <p class="d">Haz seguimiento a todos tus frentes en tiempo real desde la gerencia o cualquier lugar del mundo, en tu computadora o en tu celular. Lo que pasa en la mina, lo ves al instante.</p>
+      <ul class="ticks">
+        <li>Avance diario y mensual por frente contra la meta</li>
+        <li>Cumplimiento, cimbras y gasto de explosivo en vivo</li>
+        <li>Pronóstico de cierre de mes automático</li>
+        <li>Reportes de Jefe de Guardia y Compresorista integrados</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ MANTENIMIENTO ═════ -->
+<section class="mod" id="mantenimiento">
+  <div class="in">
+    <div class="copy rv">
+      <p class="eyebrow">Módulo Mantenimiento</p>
+      <h2>¿Cuánto pierdes cuando una máquina para?</h2>
+      <p class="d">Cada hora de máquina detenida es dinero que se va. MukiCloud cruza horómetros, mantenimientos y costos para que sepas exactamente cuánto te cuesta cada parada, y la evites.</p>
+      <ul class="ticks">
+        <li>Solicitudes de kit con aprobación de Operaciones y Logística</li>
+        <li>Costo de mantenimiento por equipo, del día y del mes</li>
+        <li>Mantenimientos preventivos programados por horas</li>
+        <li>Ganancia o pérdida por equipo conectada al dashboard</li>
+      </ul>
+    </div>
+    <div class="win rv" aria-label="Maqueta del módulo Mantenimiento">
+      <div class="win-bar"><span>Mantenimiento · Solicitud de kit</span><span class="live">En vivo</span></div>
+      <div class="win-body">
+        <div class="kpis k4">
+          <div class="kpi"><small>Kits hoy</small><b>S/ 0</b></div>
+          <div class="kpi"><small>Kits mes</small><b>S/ 760</b></div>
+          <div class="kpi"><small>Pendientes</small><b>1</b></div>
+          <div class="kpi hi"><small>Completados</small><b>7</b><span>en el mes</span></div>
+        </div>
+        <div class="kit"><div class="h"><h4>Compresora · Preventivo</h4><span class="chip">Listo para despacho</span></div><p>09/07/2026 · Mantenimiento por rotación · S/ 41<br>✓ Operaciones &nbsp; ✓ Logística · Kit: anillos (2)</p></div>
+        <div class="kit"><div class="h"><h4>Dumper · Programado</h4><span class="chip p">Aprobado Ops</span></div><p>30/06/2026 · Mantenimiento de 125 horas · S/ 19<br>Aceite 15W40 ×1 · Filtro de aire ×1 · Filtro de aceite ×1</p></div>
+        <div class="kit"><div class="h"><h4>Excavadora · Programado</h4><span class="chip p">Aprobado Ops</span></div><p>30/06/2026 · Mantenimiento de 500 horas · S/ 45</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ MUKI ═════ -->
+<section class="mod muki" id="muki">
+  <div class="in">
+    <div class="copy rv">
+      <p class="eyebrow">Potenciado con inteligencia artificial</p>
+      <h2>MUKI, tu asistente de IA.</h2>
+      <p class="d">MUKI es el asistente conversacional de MukiCloud. Avisa de desvíos, calcula pronósticos de gasto y de cierre de mes, y responde a tus preguntas sobre la operación.</p>
+      <ul class="ticks">
+        <li>Pregúntale por tu operación en cualquier momento</li>
+        <li>Alertas automáticas ante desvíos</li>
+        <li>Pronósticos de gasto y de cierre de mes</li>
+        <li>Respuestas con los datos de tu propia operación</li>
+      </ul>
+    </div>
+    <div class="rv">
+      <div class="chat" aria-label="Maqueta interactiva del asistente MUKI">
+        <div class="win-bar"><span>MUKI · Inteligencia artificial MukiCloud</span><span class="live">Listo</span></div>
+        <div class="msgs" id="msgs" aria-live="polite">
+          <div class="msg bot">Buenos días. Soy <b>MUKI</b>, el sistema de inteligencia artificial de MukiCloud. Estoy monitoreando su operación en tiempo real. ¿En qué le puedo ayudar hoy?</div>
+        </div>
+        <div class="qs" id="qs">
+          <button type="button" data-q="0">¿Cuánto llevo ganado?</button>
+          <button type="button" data-q="1">¿Cómo va el cierre de mes?</button>
+          <button type="button" data-q="2">¿Hay alertas?</button>
+        </div>
+        <div class="alerts">
+          <div class="alert"><i></i><div><b>Alerta · Sin reporte de guardia hoy</b>El reporte alimenta los metros del dashboard y el control de disparos.</div></div>
+          <div class="alert"><i></i><div><b>Alerta · Costo por metro elevado</b>S/ 2,652/m, por encima del rango esperado. Revise gastos de mantenimiento y combustible.</div></div>
+          <div class="alert ok"><i></i><div><b>OK · Cero incidentes de seguridad</b>19 días del mes sin reportes de incidentes.</div></div>
+        </div>
+      </div>
+      <p class="note">Demostración con datos de ejemplo del brochure.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ METODOLOGÍA ═════ -->
+<section class="meth" id="metodologia">
+  <div class="in">
+    <div class="rv"><p class="eyebrow">La metodología detrás</p><h2>Medir todo. Eliminar el desperdicio. Reducir la variación.</h2></div>
+    <div class="rv">
+      <p>MukiCloud aplica <b>Lean Six Sigma</b>: la filosofía que levantó al Japón de posguerra con Toyota, que Motorola y General Electric convirtieron en estándar mundial y que transformó miles de empresas. Aquí, aplicada a tu gente y tu operación.</p>
+      <div class="trio"><div><b>Medir</b><span>cada metro, sol y hora</span></div><div><b>Eliminar</b><span>el desperdicio y las paradas</span></div><div><b>Reducir</b><span>la variación del proceso</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ CONTACTO ═════ -->
+<section class="final" id="contacto">
+  <div class="in">
+    <div class="rv">
+      <p class="eyebrow">Da el siguiente paso</p>
+      <h2>Transforma tu operación hoy.</h2>
+      <p>Conoce cómo MukiCloud conecta el campo con la gerencia y pone tus costos y tu avance en un solo tablero. Agenda una demostración personalizada y sin compromiso.</p>
+      <div class="cta" style="margin-top:22px"><button type="button" class="btn" data-demo="contacto">Agendar demostración</button></div>
+    </div>
+    <div class="contact rv">
+      <a class="l" href="mailto:ventas@mukicloud.pe">ventas@mukicloud.pe <span>Correo</span></a>
+      <a class="l" href="tel:+51972067565">+51 972 067 565 <span>Llamar</span></a>
+      <a class="l" href="https://w.app/us5wsy" target="_blank" rel="noopener">WhatsApp <span>Demostraciones</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="ver-foot" aria-label="Información de la empresa y legal">
+  <div class="in">
+    <div class="biz">
+      <div><b>MukiCloud</b>Gestión operacional minera.</div>
+      <div><b>Contacto</b><a href="mailto:ventas@mukicloud.pe">ventas@mukicloud.pe</a><br><a href="tel:+51972067565">+51 972 067 565</a></div>
+      <div><b>Legal</b><a href="terminos.html">Términos y condiciones</a><br><a href="privacidad.html">Política de privacidad</a><br><a href="cookies.html">Política de cookies</a><br><a href="reembolsos.html">Reembolsos y cancelaciones</a><br><button type="button" data-cookie-settings>Configurar cookies</button></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding:16px 0 22px;font-size:13px;color:var(--mute)">
+      <span>© 2026 MukiCloud · Powered by BlackForge Technologies</span><span>Las cifras de las maquetas son datos de ejemplo.</span>
+    </div>
+  </div>
+</footer>
+
+<dialog class="demo" id="demo" aria-labelledby="demo-t" aria-describedby="demo-s">
+  <div id="demo-form-wrap">
+    <div class="demo-head">
+      <h2 id="demo-t">Agenda tu demostración</h2>
+      <button type="button" class="demo-x" data-close aria-label="Cerrar formulario"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <p class="demo-sub" id="demo-s">Déjanos tus datos y el equipo de MukiCloud te contactará para coordinar una demostración.</p>
+    <form id="demo-form" novalidate>
+      <div class="fld"><label for="f-name">Nombre completo</label><input type="text" id="f-name" name="nombre" autocomplete="name" required aria-describedby="e-name"><div class="err" id="e-name" role="alert"></div></div>
+      <div class="fld"><label for="f-mail">Correo electrónico</label><input type="email" id="f-mail" name="correo" autocomplete="email" inputmode="email" required aria-describedby="e-mail"><div class="err" id="e-mail" role="alert"></div></div>
+      <div class="fld"><label for="f-co">Empresa o unidad minera <small>(opcional)</small></label><input type="text" id="f-co" name="empresa" autocomplete="organization"></div>
+      <div class="hp" aria-hidden="true"><label>No completar <input type="text" name="web" tabindex="-1" autocomplete="off"></label></div>
+      <div>
+        <label class="chk"><input type="checkbox" id="f-ok" name="consentimiento" required aria-describedby="e-ok"><span>Acepto que MukiCloud use mi nombre y correo para contactarme sobre esta demostración, según la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>. Puedo retirar mi consentimiento cuando quiera.</span></label>
+        <div class="err" id="e-ok" role="alert"></div>
+      </div>
+      <p class="form-msg" id="f-msg" role="alert"></p>
+      <div class="demo-actions">
+        <button type="submit" class="btn" id="f-send">Enviar solicitud</button>
+        <button type="button" class="btn ghost" data-close>Cancelar</button>
+      </div>
+    </form>
+  </div>
+  <div class="demo-ok" id="demo-ok" hidden tabindex="-1">
+    <div class="ok-art" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="sq"></span><svg viewBox="0 0 132 132"><path d="M42 68l17 17 32-36"/></svg></div>
+    <h3 id="ok-t">Solicitud enviada</h3>
+    <p id="ok-p"></p>
+    <button type="button" class="btn" data-close>Cerrar</button>
+  </div>
+</dialog>
+
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Reveal, barras y contadores ── */
+  function count(el){
+    const to = +el.dataset.count;
+    if (reduce) { el.textContent = to; return; }
+    const t0 = performance.now();
+    (function f(t){ const p = Math.min(1,(t-t0)/1200); el.textContent = Math.round(to*(1-Math.pow(1-p,3))); if (p<1) requestAnimationFrame(f); })(t0);
+  }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target); e.target.classList.add('on');
+    $$('[data-w]', e.target).forEach(i => i.style.width = i.dataset.w + '%');
+    $$('[data-count]', e.target).forEach(count);
+  }), { threshold: .15 });
+  $$('.rv').forEach(el => io.observe(el));
+
+  /* ── Animaciones al hacer scroll ── */
+  const ST = ['.facts>div','.kpis>.kpi','.ticks>li','.bar-row','.pl-row','.front','.kit','.stock-item','.trio>div','.alert','.biz>div','.stock-item','tbody tr'].join(',');
+  $$('.rv').forEach(rv => { let i = 0; $$(ST, rv).forEach(el => { el.classList.add('st'); el.style.setProperty('--d', (i++ * 70) + 'ms'); }); });
+  const prog = $('#prog'); let pt = 0;
+  const onScroll = () => { if (pt) return; pt = requestAnimationFrame(() => { pt = 0; const h = document.documentElement.scrollHeight - innerHeight; prog.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, scrollY / h) : 0) + ')'; }); };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  const navLinks = $$('.top nav a');
+  const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
+  $$('main section[id]').forEach(s => spy.observe(s));
+
+  /* ── MUKI: respuestas de demostración ── */
+  const A = [
+    ['¿Cuánto llevo ganado?', 'En julio llevas <b>S/ 412,900</b> ganados, con un gasto total de <b>S/ 324,864</b>. El resultado del período es de <b>S/ +88,036</b>.'],
+    ['¿Cómo va el cierre de mes?', 'Con 122.5 m de avance al día 24, el pronóstico de cierre es de <b>153.1 m</b>: <b>97 %</b> de la meta de 158 m.'],
+    ['¿Hay alertas?', 'Hay <b>3 alertas</b>: falta el reporte de guardia de hoy, el costo por metro está elevado (S/ 2,652/m) y llevas 19 días sin incidentes de seguridad.']];
+  const msgs = $('#msgs');
+  $$('#qs button').forEach(b => b.addEventListener('click', () => {
+    const [q, a] = A[+b.dataset.q];
+    msgs.insertAdjacentHTML('beforeend', `<div class="msg me">${q}</div>`);
+    setTimeout(() => { msgs.insertAdjacentHTML('beforeend', `<div class="msg bot">${a}</div>`); }, reduce ? 0 : 450);
+  }));
+
+  /* ═════ Red de integraciones (Canvas 2D) ═════ */
+  const stage = $('#stage'), cv = $('#cv'), ctx = cv.getContext('2d');
+  const items = $$('.item');
+  const C = { bg:'#FFFFFF', fg:'#0A0A0A', mute:'#5B6570', gold:'#D4AF37', blue:'#00AEEF' };
+  const INNER = ['Dashboard','Logística','RR. HH.','Operaciones','Mantenim.','Finanzas'];
+  const FULL  = ['Dashboard KPI','Logística','Recursos Humanos','Operaciones','Mantenimiento','Finanzas'];
+  const OUTER = ['Metros','Stock','Tareo','Frentes','Horómetros','Costos'];
+  const DESC  = ['Ganado, gasto y resultado','Ingresos, salidas y stock','Tareos y planilla','Avance por frente','Kits y preventivos','Costo por metro'];
+  const nodes = [];
+  INNER.forEach((l,i) => nodes.push({ l, ring:0, a0:-Math.PI/2 + i*Math.PI/3, i }));
+  OUTER.forEach((l,i) => nodes.push({ l, ring:1, a0:-Math.PI/2 + i*Math.PI/3, i }));
+  const links = [];
+  for (let i=0;i<6;i++) links.push({ a:'core', b:i,   r:i, kind:'spoke' });
+  for (let i=0;i<6;i++) links.push({ a:i,      b:6+i, r:i, kind:'feed'  });
+  for (let i=0;i<6;i++) links.push({ a:i,      b:(i+1)%6, r:-1, kind:'ring' });
+  links.forEach((l,k) => { l.off = (k*.37)%1; l.per = l.kind==='ring' ? 7.5 : 3.2 + (k%5)*.4; l.last = 0; });
+
+  let W = 0, dpr = 1, t = 0, last = 0, running = false, raf = 0, visible = true, active = -1, events = 12840;
+  const hl = new Array(6).fill(0); let centerAlpha = 0;
+  const ease = (a,b,k) => a + (b-a)*k;
+  function pos(n, time){
+    const R = n.ring===0 ? .205 : (W<480 ? .36 : .385), spd = n.ring===0 ? .045 : -.028;
+    const a = n.a0 + (reduce ? 0 : time*spd);
+    return { x:W/2 + Math.cos(a)*R*W, y:W/2 + Math.sin(a)*R*W, a };
+  }
+  const P = (id, pts) => id==='core' ? { x:W/2, y:W/2 } : pts[id];
+
+  function resize(){
+    W = Math.max(200, Math.round(stage.getBoundingClientRect().width));
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    cv.width = cv.height = Math.round(W*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw(t);
+  }
+  function draw(time){
+    ctx.clearRect(0,0,W,W);
+    const u = W/640, pts = nodes.map(n => pos(n,time)); lastPts = pts;
+    links.forEach(l => {
+      const A = P(l.a,pts), B = P(l.b,pts), h = l.r>=0 ? hl[l.r] : 0;
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y);
+      ctx.strokeStyle = h>.01 ? `rgba(9,10,12,${.25+.75*h})` : (l.kind==='ring' ? 'rgba(9,10,12,.08)' : 'rgba(9,10,12,.2)');
+      ctx.lineWidth = h>.01 ? 1 + 1.2*h : 1; ctx.stroke();
+    });
+    links.forEach(l => {
+      if (l.kind==='ring') return;
+      const act = l.r===active, per = act ? l.per*.45 : l.per;
+      const ph = reduce ? .5 : ((time/per + l.off) % 1);
+      const prev = l.last; l.last = ph;
+      if (!reduce && ph < prev) events += act ? 3 : 1;
+      const q = Math.floor(ph*14)/14, A = P(l.a,pts), B = P(l.b,pts);
+      const x = ease(A.x,B.x,q), y = ease(A.y,B.y,q), s = (act ? 5 : 3.4)*Math.max(.8,u);
+      ctx.fillStyle = act ? C.gold : C.blue; ctx.fillRect(x-s/2,y-s/2,s,s);
+      if (act) { ctx.strokeStyle = C.fg; ctx.lineWidth = 1; ctx.strokeRect(x-s/2,y-s/2,s,s); }
+    });
+    ctx.textBaseline = 'middle';
+    nodes.forEach((n,k) => {
+      const p = pts[k], h = hl[n.i], r = (n.ring===0 ? 7 : 5)*Math.max(.85,u);
+      ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+      ctx.fillStyle = h>.01 ? C.gold : C.bg; ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = h>.01 ? C.fg : (n.ring===0 ? C.blue : 'rgba(0,174,239,.75)'); ctx.stroke();
+      const dx = Math.cos(p.a), dy = Math.sin(p.a), off = r + 10*Math.max(.85,u);
+      ctx.font = `${h>.5 ? 600 : 500} ${Math.max(9.5,11.5*u)}px Manrope, sans-serif`;
+      ctx.textAlign = Math.abs(dx)<.35 ? 'center' : (dx>0 ? 'left' : 'right');
+      ctx.fillStyle = h>.01 ? C.fg : (n.ring===0 ? C.fg : C.mute);
+      ctx.globalAlpha = (active>=0 && h<.01) ? .5 : 1;
+      const txt = n.l.toUpperCase(), tw = ctx.measureText(txt).width; let lx = p.x + dx*off;
+      if (ctx.textAlign==='left' && lx+tw>W-4) lx = W-4-tw; else if (ctx.textAlign==='right' && lx-tw<4) lx = 4+tw; else if (ctx.textAlign==='center') lx = Math.min(W-4-tw/2, Math.max(4+tw/2, lx));
+      ctx.fillText(txt, lx, p.y + dy*off + (Math.abs(dx)<.35 ? dy*4 : 0));
+      ctx.globalAlpha = 1;
+    });
+    const cs = 70*Math.max(.8,u);
+    ctx.fillStyle = C.fg; ctx.fillRect(W/2-cs/2, W/2-cs/2, cs, cs);
+    ctx.textAlign = 'center'; ctx.fillStyle = C.bg;
+    ctx.font = `600 ${11.5*Math.max(.9,u)}px Manrope, sans-serif`;
+    ctx.fillText('MESH', W/2, W/2 - (centerAlpha>.02 ? 7*u : 0));
+    if (centerAlpha>.02) {
+      ctx.globalAlpha = centerAlpha; ctx.fillStyle = C.gold;
+      ctx.font = `600 ${Math.max(8.5,9.5*u)}px Manrope, sans-serif`;
+      ctx.fillText(INNER[active].toUpperCase(), W/2, W/2 + 10*Math.max(.85,u));
+      ctx.globalAlpha = 1;
+    }
+  }
+  function step(now){
+    raf = 0; if (!running) return;
+    const dt = Math.min(.05,(now-last)/1000); last = now; t += dt;
+    for (let i=0;i<6;i++) hl[i] = ease(hl[i], i===active ? 1 : 0, Math.min(1,dt*9));
+    centerAlpha = ease(centerAlpha, active>=0 ? 1 : 0, Math.min(1,dt*10));
+    draw(t); raf = requestAnimationFrame(step);
+  }
+  const start = () => { if (reduce||running||!visible) return; running = true; last = performance.now(); raf = requestAnimationFrame(step); };
+  const stop  = () => { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; };
+  const snap  = () => { for (let i=0;i<6;i++) hl[i] = i===active ? 1 : 0; centerAlpha = active>=0 ? 1 : 0; draw(t); };
+
+  const live = $('#live');
+  function setActive(i){
+    if (active===i) return; active = i;
+    items.forEach((b,k) => k===i ? b.setAttribute('aria-current','true') : b.removeAttribute('aria-current'));
+    live.textContent = i>=0 ? `${FULL[i]}: ${DESC[i]}` : '';
+    if (reduce) snap();
+  }
+  items.forEach((b,i) => {
+    b.addEventListener('pointerenter', e => { if (e.pointerType==='mouse') setActive(i); });
+    b.addEventListener('pointerleave', e => { if (e.pointerType==='mouse' && document.activeElement!==b) setActive(-1); });
+    b.addEventListener('focus', () => setActive(i));
+    b.addEventListener('blur',  () => { if (!b.matches(':hover')) setActive(-1); });
+    b.addEventListener('click', () => setActive(i));
+  });
+
+  /* Hover directo sobre los nodos del Canvas */
+  let lastPts = [];
+  function nodeAt(e) {
+    const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = -1, bd = 22;
+    lastPts.forEach((p, k) => { const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = nodes[k].i; } });
+    return best;
+  }
+  cv.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const i = nodeAt(e); cv.classList.toggle('pt', i >= 0); if (i >= 0) setActive(i); else if (document.activeElement.className.indexOf('item') < 0) setActive(-1); });
+  cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && document.activeElement.className.indexOf('item') < 0) setActive(-1); });
+  cv.addEventListener('click', e => { const i = nodeAt(e); if (i >= 0) setActive(i); });
+
+  const list = $('#ilist'), prev = $('#prev'), next = $('#next');
+  const stepPx = () => Math.max(160, list.clientWidth*.6);
+  prev.addEventListener('click', () => list.scrollBy({ left:-stepPx(), behavior: reduce?'auto':'smooth' }));
+  next.addEventListener('click', () => list.scrollBy({ left: stepPx(), behavior: reduce?'auto':'smooth' }));
+  const arrows = () => { prev.disabled = list.scrollLeft<=2; next.disabled = list.scrollLeft + list.clientWidth >= list.scrollWidth-2; };
+  list.addEventListener('scroll', arrows, { passive:true }); addEventListener('resize', arrows); arrows();
+
+  const elEv = $('#ev'), elLat = $('#lat');
+  elEv.textContent = events.toLocaleString('es-PE');
+  setInterval(() => {
+    if (!visible) return;
+    elEv.textContent = events.toLocaleString('es-PE');
+    elLat.textContent = (active>=0 ? 9 : 14) + Math.round(Math.random()*6);
+  }, 900);
+
+  new ResizeObserver(resize).observe(stage);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; visible ? start() : stop(); }, { threshold:.05 }).observe(stage);
+  resize(); stage.classList.add('live'); start();
+  document.fonts && document.fonts.ready.then(() => { if (!running) draw(t); });
+})();
+</script>
+<script>
+/* Formulario de demostración */
+(() => {
+  const $ = s => document.querySelector(s);
+  const burger = document.getElementById("burger"), mnav = document.getElementById("mnav");
+  burger.addEventListener("click", () => { const o = mnav.hidden; mnav.hidden = !o; burger.setAttribute("aria-expanded", o); burger.setAttribute("aria-label", o ? "Cerrar menú" : "Abrir menú"); });
+  mnav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => { mnav.hidden = true; burger.setAttribute("aria-expanded", "false"); }));
+  const dlg = $('#demo'), form = $('#demo-form'), wrap = $('#demo-form-wrap'), ok = $('#demo-ok');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let opener = null;
+  const cfg = () => window.MUKI_CONFIG || {};
+  const track = (n, p) => window.mukiTrack && window.mukiTrack(n, p);
+
+  function openDemo(src, btn) {
+    opener = btn; form.reset(); clearErrors(); $('#f-msg').textContent = '';
+    ok.hidden = true; ok.classList.remove('go'); wrap.hidden = false;
+    $('#f-send').disabled = false; $('#f-send').textContent = 'Enviar solicitud';
+    dlg.showModal(); $('#f-name').focus();
+    track('demo_abrir', { origen: src });
+  }
+  function closeDemo() { dlg.close(); }
+  dlg.addEventListener('close', () => { if (opener && opener.focus) opener.focus(); });
+  dlg.addEventListener('click', e => { if (e.target === dlg) closeDemo(); });
+  document.querySelectorAll('[data-demo]').forEach(b => b.addEventListener('click', () => openDemo(b.dataset.demo, b)));
+  dlg.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDemo));
+
+  function setErr(input, errId, msg) {
+    $(errId).textContent = msg || '';
+    if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+  }
+  function clearErrors() { setErr($('#f-name'), '#e-name'); setErr($('#f-mail'), '#e-mail'); setErr($('#f-ok'), '#e-ok'); }
+  const mailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function validate() {
+    clearErrors(); let first = null;
+    const n = $('#f-name'), m = $('#f-mail'), c = $('#f-ok');
+    if (n.value.trim().length < 2) { setErr(n, '#e-name', 'Escribe tu nombre completo.'); first = first || n; }
+    if (!mailRe.test(m.value.trim())) { setErr(m, '#e-mail', m.value.trim() ? 'Revisa el correo: parece incompleto.' : 'Escribe tu correo electrónico.'); first = first || m; }
+    if (!c.checked) { setErr(c, '#e-ok', 'Necesitamos tu consentimiento para poder contactarte.'); first = first || c; }
+    if (first) first.focus();
+    return !first;
+  }
+  $('#f-ok').addEventListener('change', () => { if ($('#f-ok').checked) setErr($('#f-ok'), '#e-ok'); });
+  ['#f-name', '#f-mail'].forEach(id => $(id).addEventListener('input', () => { if ($(id).getAttribute('aria-invalid')) validate(); }));
+
+  function success(mode) {
+    wrap.hidden = true; ok.hidden = false;
+    if (mode === 'sent') { $('#ok-t').textContent = 'Solicitud enviada'; $('#ok-p').textContent = 'Recibimos tus datos. El equipo de MukiCloud te escribirá pronto para coordinar la demostración.'; }
+    else { $('#ok-t').textContent = 'Datos listos'; $('#ok-p').textContent = 'Abrimos tu aplicación de correo con la solicitud ya escrita. Solo falta pulsar «Enviar» en tu correo para que nos llegue.'; }
+    void ok.offsetWidth; ok.classList.add('go'); ok.focus();
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (form.web.value) return;                        // trampa anti-spam
+    if (!validate()) return;
+    const data = { nombre: form.nombre.value.trim(), correo: form.correo.value.trim(), empresa: form.empresa.value.trim(),
+                   consentimiento: true, fecha: new Date().toISOString(), origen: location.href };
+    const btn = $('#f-send'); btn.disabled = true; btn.textContent = 'Enviando…'; $('#f-msg').textContent = '';
+    track('demo_enviar', { con_empresa: !!data.empresa });
+    const ep = cfg().formEndpoint;
+    if (ep) {
+      try {
+        const r = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) });
+        if (!r.ok) throw new Error(r.status);
+        success('sent');
+      } catch (err) {
+        btn.disabled = false; btn.textContent = 'Enviar solicitud';
+        $('#f-msg').textContent = 'No pudimos enviar la solicitud. Inténtalo de nuevo o escríbenos a ' + (cfg().salesEmail || 'ventas@mukicloud.pe') + '.';
+      }
+    } else {
+      const body = 'Hola, quiero agendar una demostración de MukiCloud.\n\nNombre: ' + data.nombre + '\nCorreo: ' + data.correo + (data.empresa ? '\nEmpresa: ' + data.empresa : '') + '\n\nAcepto que usen estos datos para contactarme sobre la demostración.';
+      success('mailto');
+      location.href = 'mailto:' + (cfg().salesEmail || 'ventas@mukicloud.pe') + '?subject=' + encodeURIComponent('Solicitud de demostración MukiCloud') + '&body=' + encodeURIComponent(body);
+    }
+  });
+})();
+</script>
+</body>
+</html>
